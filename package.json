@@ -1,0 +1,19 @@
+{
+  "name": "black-paw",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "http-server -c-1 -p 8080 .",
+    "build": "node build.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "bestzip": "^2.2.1",
+    "http-server": "^14.1.1",
+    "terser": "^5.43.1"
+  }
+}
