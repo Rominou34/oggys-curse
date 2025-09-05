@@ -13,9 +13,10 @@ tileFixBleedScale = .5;
 
 // sound effects
 const sound_click = new Sound([1,.5]);
+const screen_width = 48;
+const screen_height = 32;
 
 // game variables
-let particleEmitter;
 let player;
 let witch;
 let enemies = [];
@@ -23,6 +24,7 @@ let projectiles = [];
 let mouses = [];
 let score = 0;
 let bestScore = 0;
+let heal = 0;
 let gameOver = false;
 
 class Witch extends EngineObject {
@@ -156,6 +158,34 @@ class Shooter extends EngineObject {
     }
 }
 
+class Boss extends EngineObject {
+    constructor(pos) {
+        const enemyTile = tile(2, 16); // Use tile 2 for enemy
+        super(pos, vec2(1,1), enemyTile, 0, randColor(), 0);
+        this.speed = 0.05;
+        this.health = 50;
+        this.shootCooldown = 120;
+        this.target = player.pos;
+        this.shootDirection = vec2(0,1);
+    }
+
+    update() {
+        super.update();
+
+        // Shoot projectiles
+        if (this.shootCooldown <= 0) {
+            for(let i = 0; i < 90; i += 2) {
+                let shootDirection = vec2(Math.cos(i), Math.abs(Math.sin(i)) * -1);
+                const projectile = new Bullet(this.pos, shootDirection);
+                projectiles.push(projectile);
+            }
+            this.shootCooldown = 120;
+        } else {
+            this.shootCooldown--;
+        }
+    }
+}
+
 class Projectile extends EngineObject {
     constructor(pos, direction) {
         const projTile = tile(1, 16);
@@ -189,9 +219,16 @@ class Bullet extends EngineObject {
         if (this.lifetime <= 0) {
             this.destroy();
         }
-        if(this.pos.x >= 31 || this.pos.x <= 1 || this.pos.y >= 15 || this.pos.y <= 1) {
+        if(this.pos.x >= (screen_width - 1) || this.pos.x <= 1 || this.pos.y >= (screen_height - 1) || this.pos.y <= 1) {
             this.destroy();
         }
+    }
+}
+
+function spawnEnemies(type, qty) {
+    for(let i = 0; i < qty; i++) {
+        const enemy = new type(vec2(randInt(2,screen_width - 2), randInt(2,screen_height - 2)));
+        enemies.push(enemy);
     }
 }
 
@@ -199,9 +236,9 @@ class Bullet extends EngineObject {
 function gameInit()
 {
     // Background layer
-    const backgroundLayer = new TileLayer(vec2(0,0), vec2(48,32));
-    for(let x = 0; x < 32; x++) {
-        for (let y = 0; y < 16; y++) {
+    const backgroundLayer = new TileLayer(vec2(0,0), vec2(screen_width, screen_height));
+    for(let x = 0; x < screen_width; x++) {
+        for (let y = 0; y < screen_height; y++) {
             const tileIndex = 1;
             const direction = 0;
             const mirror = false;
@@ -214,7 +251,7 @@ function gameInit()
     backgroundLayer.redraw();
 
     // create tile collision and visible tile layer
-    initTileCollision(vec2(32,16));
+    initTileCollision(vec2(screen_width, screen_height));
     const pos = vec2();
     const tileLayer = new TileLayer(pos, tileCollisionSize);
 
@@ -241,9 +278,9 @@ function gameInit()
     }
 
     // Adding walls all around the map
-    for(let x = 0; x < 32; x++) {
-        for(let y = 0; y < 16; y++) {
-            if(x == 0 || x == 31 || y == 0 || y == 15) {
+    for(let x = 0; x < screen_width; x++) {
+        for(let y = 0; y < screen_height; y++) {
+            if(x == 0 || x == (screen_width - 1) || y == 0 || y == (screen_height - 1)) {
                 const tileIndex = 1;
                 const direction = 0;
                 const mirror = false;
@@ -268,7 +305,7 @@ function gameInit()
     tileLayer.redraw();
 
     // setup camera
-    cameraPos = vec2(16,8);
+    cameraPos = vec2(screen_width / 2, screen_height / 2);
     cameraScale = 32;
 
     launchGame();
@@ -344,6 +381,7 @@ function gameUpdate()
         if (proj.pos.distance(player.pos) < 0.5) {
             console.log("Bullet hit player", proj);
             player.health -= 1;
+            heal = 1;
             proj.destroy();
             projectiles.splice(projectiles.indexOf(proj), 1);
             break;
@@ -357,6 +395,15 @@ function gameUpdate()
             score += 1;
             mouse.destroy();
             mouses.splice(mouses.indexOf(mouse), 1);
+
+            // If we are not full health we gain back 1 hp every 5 mice
+            if(player.health < 10) {
+                heal++;
+            }
+            if(heal >= 5) {
+                player.health++;
+                heal = 0;
+            }
             break;
         }
     }
@@ -368,7 +415,7 @@ function gameUpdate()
 
     // Spawn new mouses occasionally
     if (rand() < 0.01) {
-        const mouse = new Mouse(vec2(randInt(2,30), randInt(2,14)));
+        const mouse = new Mouse(vec2(randInt(2, screen_width - 1), randInt(2, screen_height - 2)));
         mouses.push(mouse);
     }
 }
@@ -391,11 +438,9 @@ function launchGame() {
     for (const mouse of mouses) mouse.destroy();
     mouses = [];
 
-    for (let i = 0; i < 3; i++) {
-        const enemyPos = vec2(randInt(2,30), randInt(2,14));
-        const enemy = new Shooter(enemyPos);
-        enemies.push(enemy);
-    }
+    spawnEnemies(Shooter, 3);
+
+    spawnEnemies(Boss, 5);
 
     // Create mouses
     for (let i = 0; i < 3; i++) {
@@ -419,9 +464,14 @@ function gameRender()
 function gameRenderPost()
 {
     // draw to overlay canvas for hud rendering
-    drawTextScreen(`Health: ${player.health} | Score: ${score} | Best : ${bestScore}`,
+    drawTextScreen(`Score: ${score} | Best : ${bestScore}`,
         vec2(mainCanvasSize.x/2, 70), 40,   // position, size
-        hsl(0,0,1), 4, hsl(0,0,0));         // color, outline size and color
+        hsl(0,0,1));         // color, outline size and color
+
+    // draw to overlay canvas for hud rendering
+    drawTextScreen("🤍".repeat(player.health),
+        vec2(mainCanvasSize.x / 2, 120), 40,   // position, size
+        hsl(0,0,1));         // color, outline size and color
 
     if (gameOver) {
         drawTextScreen('Game Over! Press R to Restart',
