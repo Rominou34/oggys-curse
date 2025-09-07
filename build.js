@@ -11,6 +11,16 @@ const BUILD_FOLDER = 'build';
 const sourceFiles =
 [
     'dist/littlejs.release.js',
+    'globals.js',
+    'helpers.js',
+    'classes/boss.js',
+    'classes/bullet.js',
+    'classes/enemy.js',
+    'classes/mouse.js',
+    'classes/player.js',
+    'classes/projectile.js',
+    'classes/shooter.js',
+    'classes/witch.js',
     'game.js',
     // add your game's files here
 ];

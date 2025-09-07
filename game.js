@@ -11,226 +11,27 @@ setShowSplashScreen(false);
 // fix texture bleeding by shrinking tile slightly
 tileFixBleedScale = .5;
 
-// sound effects
-const sound_click = new Sound([1,.5]);
-const screen_width = 48;
-const screen_height = 32;
+// import { sound_click, screen_width, screen_height, player, witch, enemies, projectiles, mouses, score, bestScore, heal, gameOver } from './globals.js';
+// import Player from './classes/player.js';
+// import Witch from './classes/witch.js';
+// import Mouse from './classes/mouse.js';
+// import { spawnEnemies, launchGame } from './helpers.js';
 
-// game variables
-let player;
-let witch;
-let enemies = [];
-let projectiles = [];
-let mouses = [];
-let score = 0;
-let bestScore = 0;
-let heal = 0;
-let gameOver = false;
+// // sound effects
+// const sound_click = new Sound([1,.5]);
+// const screen_width = 48;
+// const screen_height = 32;
 
-class Witch extends EngineObject {
-    speed = 0.1;
-
-    constructor(pos) {
-        const witchTile = tile(1, 16); // Use tile 1 for witch
-        super(pos, vec2(1, 1), witchTile, 0, hsl(0.7,0.8,0.6), 0);
-        this.shootCooldown = 0;
-    }
-
-    update() {
-        super.update();
-        // Shoot enemies periodically
-        if (this.shootCooldown <= 0) {
-            // Shoot towards enemy
-            if(enemies.length > 0) {
-                const direction = enemies[randInt(0, enemies.length - 1)].pos.subtract(this.pos).normalize();
-                const projectile = new Projectile(this.pos, direction, false);
-                projectiles.push(projectile);
-                this.shootCooldown = 90; // 1.5 seconds
-            }
-        } else {
-            this.shootCooldown--;
-        }
-        if(this.pos.x >= 28) {
-            this.speed = -0.1;
-        }
-        if(this.pos.x <= 2) {
-            this.speed = 0.1;
-        }
-        this.pos.x += this.speed;
-    }
-}
-
-class Player extends EngineObject {
-    constructor(pos, size, tile, angle, color, renderOrder) {
-        super(pos, size, tile, angle, color, renderOrder)
-        this.speed = 0.1;
-        this.health = 10;
-    }
-
-    move(direction) {
-        this.pos = this.pos.add(direction.scale(this.speed));
-        // Keep player within bounds
-        this.pos.x = clamp(this.pos.x, 1, 31);
-        this.pos.y = clamp(this.pos.y, 1, 15);
-    }
-
-    update() {
-        super.update();
-    }
-}
-
-class Mouse extends EngineObject {
-    speed = 0.1;
-    nextPos = vec2(0,0);
-    direction = vec2(0,0);
-    constructor(pos) {
-        super(pos, vec2(1,1), tile(0,16), 0, hsl(0,0,0.8), 0);
-        this.newDir();
-    }
-
-    newDir() {
-        this.nextPos = vec2(randInt(2, 28), randInt(2, 14));
-        this.direction = this.nextPos.subtract(this.pos).normalize();
-    }
-
-    update() {
-        super.update();
-        this.pos = this.pos.add(this.direction.scale(this.speed));
-        if(this.pos.distance(this.nextPos) < 0.5) {
-            this.newDir();
-        }
-    }
-}
-
-class Enemy extends EngineObject {
-    constructor(pos) {
-        const enemyTile = tile(2, 16); // Use tile 2 for enemy
-        super(pos, vec2(1,1), enemyTile, 0, randColor(), 0);
-        this.speed = 0.05;
-        this.health = 50;
-        this.shootCooldown = randInt(120, 240); // Random shoot interval
-        this.target = player.pos;
-    }
-
-    update() {
-        super.update();
-        // Move towards player
-        const direction = player.pos.subtract(this.pos).normalize();
-        this.pos = this.pos.add(direction.scale(this.speed));
-
-        // Shoot projectiles
-        if (this.shootCooldown <= 0) {
-            const projectile = new Projectile(this.pos, player.pos.subtract(this.pos).normalize(), false);
-            projectiles.push(projectile);
-            this.shootCooldown = randInt(120, 240);
-        } else {
-            this.shootCooldown--;
-        }
-    }
-}
-
-class Shooter extends EngineObject {
-    constructor(pos) {
-        const enemyTile = tile(2, 16); // Use tile 2 for enemy
-        super(pos, vec2(1,1), enemyTile, 0, randColor(), 0);
-        this.speed = 0.05;
-        this.health = 50;
-        this.shootCooldown = 5;
-        this.target = player.pos;
-        this.shootDirection = vec2(0,1);
-        this.shootAngle = 0;
-        this.shootMove = 0.02;
-    }
-
-    update() {
-        super.update();
-        this.shootAngle += this.shootMove;
-        this.shootDirection = vec2(Math.cos(this.shootAngle), Math.abs(Math.sin(this.shootAngle)) * -1);
-
-        // Shoot projectiles
-        if (this.shootCooldown <= 0) {
-            const projectile = new Bullet(this.pos, this.shootDirection);
-            projectiles.push(projectile);
-            this.shootCooldown = 5;
-        } else {
-            this.shootCooldown--;
-        }
-    }
-}
-
-class Boss extends EngineObject {
-    constructor(pos) {
-        const enemyTile = tile(2, 16); // Use tile 2 for enemy
-        super(pos, vec2(1,1), enemyTile, 0, randColor(), 0);
-        this.speed = 0.05;
-        this.health = 50;
-        this.shootCooldown = 120;
-        this.target = player.pos;
-        this.shootDirection = vec2(0,1);
-    }
-
-    update() {
-        super.update();
-
-        // Shoot projectiles
-        if (this.shootCooldown <= 0) {
-            for(let i = 0; i < 90; i += 2) {
-                let shootDirection = vec2(Math.cos(i), Math.abs(Math.sin(i)) * -1);
-                const projectile = new Bullet(this.pos, shootDirection);
-                projectiles.push(projectile);
-            }
-            this.shootCooldown = 120;
-        } else {
-            this.shootCooldown--;
-        }
-    }
-}
-
-class Projectile extends EngineObject {
-    constructor(pos, direction) {
-        const projTile = tile(1, 16);
-        super(pos, vec2(0.5,0.5), projTile, 0, hsl(0,1,0.5), 0);
-        this.velocity = direction.scale(0.2);
-        this.lifetime = 300; // 5 seconds at 60fps
-    }
-
-    update() {
-        super.update();
-        this.pos = this.pos.add(this.velocity);
-        this.lifetime--;
-        if (this.lifetime <= 0) {
-            this.destroy();
-        }
-    }
-}
-
-class Bullet extends EngineObject {
-    constructor(pos, direction) {
-        const projTile = tile(0, 16);
-        super(pos, vec2(0.5,0.5), projTile, 0, hsl(0,1,0.5), 0);
-        this.velocity = direction.scale(0.02);
-        this.lifetime = 300; // 5 seconds at 60fps
-    }
-
-    update() {
-        super.update();
-        this.pos = this.pos.add(this.velocity);
-        this.lifetime--;
-        if (this.lifetime <= 0) {
-            this.destroy();
-        }
-        if(this.pos.x >= (screen_width - 1) || this.pos.x <= 1 || this.pos.y >= (screen_height - 1) || this.pos.y <= 1) {
-            this.destroy();
-        }
-    }
-}
-
-function spawnEnemies(type, qty) {
-    for(let i = 0; i < qty; i++) {
-        const enemy = new type(vec2(randInt(2,screen_width - 2), randInt(2,screen_height - 2)));
-        enemies.push(enemy);
-    }
-}
+// // game variables
+// var player;
+// let witch;
+// let enemies = [];
+// let projectiles = [];
+// let mouses = [];
+// let score = 0;
+// let bestScore = 0;
+// let heal = 0;
+// let gameOver = false;
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameInit()
@@ -416,35 +217,6 @@ function gameUpdate()
     // Spawn new mouses occasionally
     if (rand() < 0.01) {
         const mouse = new Mouse(vec2(randInt(2, screen_width - 1), randInt(2, screen_height - 2)));
-        mouses.push(mouse);
-    }
-}
-
-// Reset game state
-function launchGame() {
-    player.health = 10;
-    player.pos = vec2(16,8);
-
-    if(score > bestScore) {
-        bestScore = score;
-    }
-    score = 0;
-    gameOver = false;
-    // Clear enemies and projectiles
-    for (const enemy of enemies) enemy.destroy();
-    enemies = [];
-    for (const proj of projectiles) proj.destroy();
-    projectiles = [];
-    for (const mouse of mouses) mouse.destroy();
-    mouses = [];
-
-    spawnEnemies(Shooter, 3);
-
-    spawnEnemies(Boss, 5);
-
-    // Create mouses
-    for (let i = 0; i < 3; i++) {
-        const mouse = new Mouse(vec2(randInt(2,30), randInt(2,14)));
         mouses.push(mouse);
     }
 }

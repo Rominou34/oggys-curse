@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="cover.png">
+</p>
+
 # Oggy's Curse
 
 My entry for the [js13kGames 2025](https://js13kgames.com/2025/).
