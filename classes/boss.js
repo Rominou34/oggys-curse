@@ -14,9 +14,9 @@ class Boss extends EngineObject {
 
         // Shoot projectiles
         if (this.shootCooldown <= 0) {
-            for(let i = 0; i < 90; i += 2) {
-                let shootDirection = vec2(Math.cos(i), Math.abs(Math.sin(i)) * -1);
-                const projectile = new Bullet(this.pos, shootDirection);
+            for(let i = 0; i < 2*PI; i += 0.2) {
+                let shootDirection = vec2(Math.cos(i), Math.sin(i));
+                const projectile = new Bullet(this.pos, shootDirection, hsl(0,1,0.8));
                 projectiles.push(projectile);
             }
             this.shootCooldown = 120;

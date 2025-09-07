@@ -18,7 +18,7 @@ class Shooter extends EngineObject {
 
         // Shoot projectiles
         if (this.shootCooldown <= 0) {
-            const projectile = new Bullet(this.pos, this.shootDirection);
+            const projectile = new Bullet(this.pos, this.shootDirection, hsl(0,1,0.5));
             projectiles.push(projectile);
             this.shootCooldown = 5;
         } else {

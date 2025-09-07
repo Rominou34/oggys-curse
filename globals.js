@@ -1,15 +1,16 @@
 // sound effects
 const sound_click = new Sound([1,.5]);
-const screen_width = 48;
-const screen_height = 32;
+const screen_width = 32;
+const screen_height = 24;
 
 // game variables
 var player;
-let witch;
-let enemies = [];
-let projectiles = [];
-let mouses = [];
-let score = 0;
-let bestScore = 0;
-let heal = 0;
-let gameOver = false;
+var witch;
+var enemies = [];
+var projectiles = [];
+var mouses = [];
+var score = 0;
+var bestScore = 0;
+var heal = 0;
+var gameOver = false;
+var inMenu = true;

@@ -11,27 +11,6 @@ setShowSplashScreen(false);
 // fix texture bleeding by shrinking tile slightly
 tileFixBleedScale = .5;
 
-// import { sound_click, screen_width, screen_height, player, witch, enemies, projectiles, mouses, score, bestScore, heal, gameOver } from './globals.js';
-// import Player from './classes/player.js';
-// import Witch from './classes/witch.js';
-// import Mouse from './classes/mouse.js';
-// import { spawnEnemies, launchGame } from './helpers.js';
-
-// // sound effects
-// const sound_click = new Sound([1,.5]);
-// const screen_width = 48;
-// const screen_height = 32;
-
-// // game variables
-// var player;
-// let witch;
-// let enemies = [];
-// let projectiles = [];
-// let mouses = [];
-// let score = 0;
-// let bestScore = 0;
-// let heal = 0;
-// let gameOver = false;
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameInit()
@@ -102,14 +81,12 @@ function gameInit()
     // Create witch
     witch = new Witch(vec2(16,12));
 
-    
+
     tileLayer.redraw();
 
     // setup camera
     cameraPos = vec2(screen_width / 2, screen_height / 2);
     cameraScale = 32;
-
-    launchGame();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,9 +95,14 @@ function gameUpdate()
     if (gameOver) {
         if(keyWasPressed('KeyR')) {
             launchGame();
-        } else {
-            return;
         }
+        return;
+    } else if (inMenu) {
+        if(keyWasPressed('KeyS')) {
+            inMenu = false;
+            launchGame();
+        }
+        return;
     }
 
     if (mouseWasPressed(0))
@@ -235,15 +217,24 @@ function gameRender()
 ///////////////////////////////////////////////////////////////////////////////
 function gameRenderPost()
 {
-    // draw to overlay canvas for hud rendering
-    drawTextScreen(`Score: ${score} | Best : ${bestScore}`,
-        vec2(mainCanvasSize.x/2, 70), 40,   // position, size
-        hsl(0,0,1));         // color, outline size and color
+    if (inMenu) {
+        drawTextScreen('Oggy\'s Curse',
+            vec2(mainCanvasSize.x/2, mainCanvasSize.y/2 - 50), 60,
+            hsl(0,0,1));
+        drawTextScreen('Press S to Start',
+            vec2(mainCanvasSize.x/2, mainCanvasSize.y/2 + 50), 40,
+            hsl(0,0,1));
+    } else if (!gameOver) {
+        // draw to overlay canvas for hud rendering
+        drawTextScreen(`Score: ${score} | Best : ${bestScore}`,
+            vec2(mainCanvasSize.x/2, 70), 40,   // position, size
+            hsl(0,0,1));         // color, outline size and color
 
-    // draw to overlay canvas for hud rendering
-    drawTextScreen("🤍".repeat(player.health),
-        vec2(mainCanvasSize.x / 2, 120), 40,   // position, size
-        hsl(0,0,1));         // color, outline size and color
+        // draw to overlay canvas for hud rendering
+        drawTextScreen("🤍".repeat(player.health),
+            vec2(mainCanvasSize.x / 2, 120), 40,   // position, size
+            hsl(0,0,1));         // color, outline size and color
+    }
 
     if (gameOver) {
         drawTextScreen('Game Over! Press R to Restart',
