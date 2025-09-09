@@ -25,7 +25,11 @@ function launchGame() {
 
     spawnEnemies(Shooter, 3);
 
-    spawnEnemies(Boss, 5);
+    spawnEnemies(Magician, 5);
+
+    spawnEnemies(Wizard, 2);
+
+    spawnEnemies(Mage, 2);
 
     // Create mouses
     for (let i = 0; i < 3; i++) {
