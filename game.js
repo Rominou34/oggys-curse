@@ -96,11 +96,53 @@ function gameUpdate()
         if(keyWasPressed('KeyR')) {
             launchGame();
         }
+        if(keyWasPressed('KeyM')) {
+            inMenu = true;
+            gameOver = false;
+        }
         return;
     } else if (inMenu) {
-        if(keyWasPressed('KeyS')) {
+        // Handle mode selection from menu
+        // Keyboard shortcuts
+        if (keyWasPressed('KeyW')) {
+            gameMode = 'wave';
             inMenu = false;
             launchGame();
+        }
+        if (keyWasPressed('KeyR')) {
+            gameMode = 'random';
+            inMenu = false;
+            launchGame();
+        }
+
+        // Mouse click on on-screen buttons
+        if (mouseWasPressed(0)) {
+            // Convert world mouse to screen coordinates
+            const mouseScreen = mousePos.subtract(cameraPos).scale(cameraScale).add(vec2(mainCanvasSize.x/2, mainCanvasSize.y/2));
+
+            // Button bounds (computed to match draw positions in gameRenderPost)
+            const btnSize = 40;
+            const makeBounds = (center, text) => {
+                const estimatedWidth = text.length * btnSize * 0.6;
+                const halfW = estimatedWidth / 2;
+                const halfH = btnSize * 0.7 / 2;
+                return { x0: center.x - halfW, y0: center.y - halfH, x1: center.x + halfW, y1: center.y + halfH };
+            };
+            const waveCenter = vec2(mainCanvasSize.x/2 - 120, mainCanvasSize.y/2 + 20);
+            const randomCenter = vec2(mainCanvasSize.x/2 + 120, mainCanvasSize.y/2 + 20);
+            const waveBounds = makeBounds(waveCenter, 'Wave Mode');
+            const randomBounds = makeBounds(randomCenter, 'Random Mode');
+
+            const inside = (p, b) => p.x >= b.x0 && p.x <= b.x1 && p.y >= b.y0 && p.y <= b.y1;
+            if (inside(mouseScreen, waveBounds)) {
+                gameMode = 'wave';
+                inMenu = false;
+                launchGame();
+            } else if (inside(mouseScreen, randomBounds)) {
+                gameMode = 'random';
+                inMenu = false;
+                launchGame();
+            }
         }
         return;
     }
@@ -132,21 +174,10 @@ function gameUpdate()
         player.move(vec2(1,0));
     }
 
-    // Update player
-    player.update();
-
-    // Update witch
-    witch.update();
-
-    // Update enemies
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        const enemy = enemies[i];
-        enemy.update();
-        if (enemy.health <= 0) {
-            enemy.destroy();
-            enemies.splice(i, 1);
-            score += 10;
-        }
+    // Wave progression: when all enemies are cleared, go to next wave
+    if (!inMenu && !gameOver && gameMode === 'wave' && enemies.length === 0) {
+        currentWaveIndex++;
+        spawnWave(currentWaveIndex);
     }
 
     // Update projectiles
@@ -159,6 +190,16 @@ function gameUpdate()
         }
     }
 
+    // Update witch spells
+    for (let i = witchSpells.length - 1; i >= 0; i--) {
+        const wspe = witchSpells[i];
+        wspe.update();
+        if (wspe.lifetime <= 0) {
+            wspe.destroy();
+            witchSpells.splice(i, 1);
+        }
+    }
+
     // Collision detection: projectiles hit player
     for (const proj of projectiles) {
         if (proj.pos.distance(player.pos) < 0.5) {
@@ -168,6 +209,24 @@ function gameUpdate()
             proj.destroy();
             projectiles.splice(projectiles.indexOf(proj), 1);
             break;
+        }
+    }
+
+    // Collision detection: witch spells hit enemies
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        const enemy = enemies[i];
+        for (const wspe of witchSpells) {
+            if (wspe.pos.distance(enemy.pos) < 0.5) {
+                console.log("Witch spell hit enemy", wspe);
+                enemy.health -= 1;
+                wspe.destroy();
+                witchSpells.splice(witchSpells.indexOf(wspe), 1);
+                break;
+            }
+            if (enemy.health <= 0) {
+                enemy.destroy();
+                enemies.splice(i, 1);
+            }
         }
     }
 
@@ -189,6 +248,17 @@ function gameUpdate()
             }
             break;
         }
+    }
+
+    // Update player
+    player.update();
+
+    // Update witch
+    witch.update();
+
+    // Update enemies
+    for (const enemy of enemies) {
+        enemy.update();
     }
 
     // Check game over
@@ -219,11 +289,21 @@ function gameRenderPost()
 {
     if (inMenu) {
         drawTextScreen('Oggy\'s Curse',
-            vec2(mainCanvasSize.x/2, mainCanvasSize.y/2 - 50), 60,
+            vec2(mainCanvasSize.x/2, mainCanvasSize.y/2 - 70), 60,
             hsl(0,0,1));
-        drawTextScreen('Press S to Start',
-            vec2(mainCanvasSize.x/2, mainCanvasSize.y/2 + 50), 40,
+
+        // Instruction
+        drawTextScreen('Select a Mode:',
+            vec2(mainCanvasSize.x/2, mainCanvasSize.y/2), 40,
             hsl(0,0,1));
+
+        // Buttons as clickable text
+        drawTextScreen('Wave Mode (W)',
+            vec2(mainCanvasSize.x/2, mainCanvasSize.y/2 + 60), 40,
+            hsl(0.6,0.8,0.8));
+        drawTextScreen('Random Mode (R)',
+            vec2(mainCanvasSize.x/2, mainCanvasSize.y/2 + 100), 40,
+            hsl(0.1,0.8,0.8));
     } else if (!gameOver) {
         // draw to overlay canvas for hud rendering
         drawTextScreen(`Score: ${score} | Best : ${bestScore}`,
@@ -237,7 +317,7 @@ function gameRenderPost()
     }
 
     if (gameOver) {
-        drawTextScreen('Game Over! Press R to Restart',
+        drawTextScreen('Game Over! Press R to Restart | M for Menu',
             vec2(mainCanvasSize.x/2, mainCanvasSize.y/2), 60,
             hsl(0,1,0.5), 6, hsl(0,0,0));
     }
