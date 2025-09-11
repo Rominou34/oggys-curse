@@ -14,8 +14,8 @@ class Witch extends EngineObject {
             // Shoot towards enemy
             if(enemies.length > 0) {
                 const direction = enemies[randInt(0, enemies.length - 1)].pos.subtract(this.pos).normalize();
-                const projectile = new WitchSpell(this.pos, direction);
-                projectiles.push(projectile);
+                const witchSpell = new WitchSpell(this.pos, direction);
+                witchSpells.push(witchSpell);
                 this.shootCooldown = 90; // 1.5 seconds
             }
         } else {

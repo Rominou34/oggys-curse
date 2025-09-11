@@ -147,12 +147,6 @@ function gameUpdate()
         return;
     }
 
-    if (mouseWasPressed(0))
-    {
-        // play sound when mouse is pressed
-        sound_click.play(mousePos);
-    }
-
     if (mouseWheel)
     {
         // zoom in and out with mouse wheel
@@ -174,10 +168,23 @@ function gameUpdate()
         player.move(vec2(1,0));
     }
 
-    // Wave progression: when all enemies are cleared, go to next wave
-    if (!inMenu && !gameOver && gameMode === 'wave' && enemies.length === 0) {
-        currentWaveIndex++;
-        spawnWave(currentWaveIndex);
+    // Wave progression with delay: when all enemies are cleared, start a countdown before the next wave
+    if (!inMenu && !gameOver && gameMode === 'wave') {
+        if (enemies.length === 0) {
+            if (!pendingNextWave) {
+                pendingNextWave = true;
+                waveDelayFrames = 300; // 5 seconds at 60fps
+            } else if (waveDelayFrames > 0) {
+                waveDelayFrames--;
+            } else {
+                pendingNextWave = false;
+                currentWaveIndex++;
+                spawnWave(currentWaveIndex);
+            }
+        } else {
+            // If enemies appear again (e.g., mid-wave), cancel pending
+            pendingNextWave = false;
+        }
     }
 
     // Update projectiles
@@ -306,7 +313,8 @@ function gameRenderPost()
             hsl(0.1,0.8,0.8));
     } else if (!gameOver) {
         // draw to overlay canvas for hud rendering
-        drawTextScreen(`Score: ${score} | Best : ${bestScore}`,
+        let waveInfo = gameMode == 'random' ? '' : ` | Wave : ${currentWaveIndex + 1}`;
+        drawTextScreen(`Score: ${score} | Best : ${bestScore}${waveInfo}`,
             vec2(mainCanvasSize.x/2, 70), 40,   // position, size
             hsl(0,0,1));         // color, outline size and color
 

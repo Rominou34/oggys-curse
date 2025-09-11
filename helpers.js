@@ -15,7 +15,9 @@ function clearChaos() {
 }
 
 function spawnWave(waveIndex) {
-    const wave = waves[waveIndex % waves.length];
+    // Determine base wave (1-based index wrapping over waves length)
+    const baseIndex = ((waveIndex) % waves.length);
+    const wave = waves[baseIndex];
     if (!wave) return;
 
     // Clear any remaining enemies/projectiles before spawning new wave
@@ -31,15 +33,30 @@ function spawnWave(waveIndex) {
         }
     };
 
+    // Spawn base wave
     spawnAtList(wave.magicians, Magician);
     spawnAtList(wave.mages, Mage);
     spawnAtList(wave.shooters, Shooter);
     spawnAtList(wave.wizards, Wizard);
+
+    // Inject additional enemies based on 10-wave thresholds
+    // waveIndex is 0-based in code; display is +1. Compute threshold using display index.
+    const displayWaveNumber = waveIndex + 1;
+    const threshold = Math.floor(displayWaveNumber / 10) * 10;
+    console.log('> threshold', threshold);
+    if (threshold >= 10 && addEnemies && addEnemies[threshold]) {
+        const extra = addEnemies[threshold];
+        console.log('>>>> extra', extra);
+        spawnAtList(extra.magicians, Magician);
+        spawnAtList(extra.mages, Mage);
+        spawnAtList(extra.shooters, Shooter);
+        spawnAtList(extra.wizards, Wizard);
+    }
 }
 
 // Reset game state
 function launchGame() {
-    player.health = 10;
+    player.health = 100;
     player.pos = vec2(16,8);
 
     if(score > bestScore) {
@@ -64,6 +81,9 @@ function launchGame() {
     } else {
         // Wave mode
         currentWaveIndex = 0;
+        // First wave spawns immediately; clear any pending delay
+        pendingNextWave = false;
+        waveDelayFrames = 0;
         spawnWave(currentWaveIndex);
     }
 

@@ -9,7 +9,7 @@ class Magician extends EngineObject {
         const enemyTile = tile(2, 16); // Use tile 2 for enemy
         super(pos, vec2(1,1), enemyTile, 0, randColor(), 0);
         this.speed = 0.05;
-        this.health = 50;
+        this.health = 1;
         this.shootCooldown = 120;
         this.target = player.pos;
         this.shootDirection = vec2(0,1);
