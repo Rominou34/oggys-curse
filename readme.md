@@ -28,7 +28,7 @@ Dodge, dash, and sneak between spells in this arcade-style bullet hell, where yo
 
 Each mouse eaten gives you 1 point.
 
-Each bullet / spell taken makes you lose 1 HP.
+Each bullet / spell taken makes you lose 1 HP (2 HP if it is one from your witch).
 
 Every 5 mice eaten you gain back 1 HP.
 

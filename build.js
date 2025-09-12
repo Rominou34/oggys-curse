@@ -18,6 +18,7 @@ const sourceFiles =
     'classes/mouse.js',
     'classes/player.js',
     'classes/turning-bullet.js',
+    'classes/sbire.js',
     'classes/shooter.js',
     'classes/witch-spell.js',
     'classes/witch.js',
