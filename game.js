@@ -207,22 +207,29 @@ function gameUpdate()
         }
     }
 
-    // Collision detection: projectiles hit player
+    // Collision detection: projectiles hit player (with invincibility window)
     for (const proj of projectiles) {
         if (proj.pos.distance(player.pos) < 0.5) {
             console.log("Bullet hit player", proj);
-            player.health -= 1;
-            heal = 1;
+            const tookDamage = player.takeDamage(1);
             proj.destroy();
             projectiles.splice(projectiles.indexOf(proj), 1);
             break;
         }
     }
 
-    // Collision detection: witch spells hit enemies
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        const enemy = enemies[i];
-        for (const wspe of witchSpells) {
+    // Collision detection: witch spells hit enemies or the player
+    for (const wspe of witchSpells) {
+        if (wspe.pos.distance(player.pos) < 0.5) {
+            console.log("Witch spell hit player", wspe);
+            const tookDamage = player.takeDamage(2);
+            wspe.destroy();
+            witchSpells.splice(witchSpells.indexOf(wspe), 1);
+            break;
+        }
+
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            const enemy = enemies[i];
             if (wspe.pos.distance(enemy.pos) < 0.5) {
                 console.log("Witch spell hit enemy", wspe);
                 enemy.health -= 1;
@@ -247,11 +254,11 @@ function gameUpdate()
 
             // If we are not full health we gain back 1 hp every 5 mice
             if(player.health < 10) {
-                heal++;
+                player.heal++;
             }
-            if(heal >= 5) {
+            if(player.heal >= 5) {
                 player.health++;
-                heal = 0;
+                player.heal = 0;
             }
             break;
         }
@@ -319,7 +326,7 @@ function gameRenderPost()
             hsl(0,0,1));         // color, outline size and color
 
         // draw to overlay canvas for hud rendering
-        drawTextScreen("🤍".repeat(player.health),
+        drawTextScreen(`HP : ${player.health}🤍 | Heal : ${player.heal}`,
             vec2(mainCanvasSize.x / 2, 120), 40,   // position, size
             hsl(0,0,1));         // color, outline size and color
     }

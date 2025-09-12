@@ -11,7 +11,6 @@ var witchSpells = [];
 var mouses = [];
 var score = 0;
 var bestScore = 0;
-var heal = 0;
 var gameOver = false;
 var inMenu = true;
 
