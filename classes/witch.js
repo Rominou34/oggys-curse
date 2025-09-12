@@ -1,7 +1,7 @@
 class Witch extends EngineObject {
 	constructor(pos) {
-		const witchTile = tile(1, 16); // Use tile 1 for witch
-		super(pos, vec2(1, 1), witchTile, 0, hsl(0.7,0.8,0.6), 0);
+		const witchTile = tile(4, 16); // Use tile 4 for witch
+		super(pos, characterSize, witchTile, 0, hsl(0,0,1), 0);
 
 		// Movement steps across the bottom
 		this.stepPositionsX = [4, 12, Math.floor(screen_width/2), screen_width - 12, screen_width - 4];
@@ -34,7 +34,7 @@ class Witch extends EngineObject {
 					const witchSpell = new WitchSpell(this.pos, direction);
 					witchSpells.push(witchSpell);
 					this.spellsCastThisStop++;
-					this.shootCooldown = 120; // 2 seconds at 60fps
+					this.shootCooldown = 240;
 				}
 			}
 			this.waitTimer--;
@@ -57,8 +57,8 @@ class Witch extends EngineObject {
 			// Arrived at step, snap and start waiting period
 			this.pos.x = this.targetX;
 			this.pos.y = this.stepY;
-			this.waitTimer = 240; // 4 seconds at 60fps
-			this.shootCooldown = 0; // cast immediately upon arrival
+			this.waitTimer = 240;
+			this.shootCooldown = 120;
 			this.spellsCastThisStop = 0;
 		}
 	}

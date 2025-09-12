@@ -5,8 +5,9 @@
  */
 class Sbire extends EngineObject {
     constructor(pos) {
+        // @TODO - Create sbire sprite (tile 9)
         const enemyTile = tile(2, 16); // Use tile 2 for enemy
-        super(pos, vec2(1,1), enemyTile, 0, randColor(), 0);
+        super(pos, characterSize, enemyTile, 0, hsl(0,0,1), 0);
         this.speed = 0.05;
         this.health = 1;
         this.shootCooldown = 120;
@@ -30,7 +31,7 @@ class Sbire extends EngineObject {
             // direction in order to create a cone
             for(let i = startAngle; i < endAngle; i += this.angleStep) {
                 const newDirection = direction.rotate(i).normalize();
-                const projectile = new Bullet(this.pos, newDirection, hsl(0.4,1,0.5));
+                const projectile = new Bullet(this.pos, newDirection, hsl(0.4,1,0.5), 1);
                 projectiles.push(projectile);
             }
             this.shootCooldown = 300;

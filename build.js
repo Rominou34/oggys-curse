@@ -10,7 +10,7 @@ const PROGRAM_NAME = 'game';
 const BUILD_FOLDER = 'build';
 const sourceFiles =
 [
-    'dist/littlejs.release.js',
+    'dist/littlejs.reduced.js',
     'classes/bullet.js',
     'classes/enemy.js',
     'classes/magician.js',

@@ -3,12 +3,12 @@ class Mouse extends EngineObject {
     nextPos = vec2(0,0);
     direction = vec2(0,0);
     constructor(pos) {
-        super(pos, vec2(1,1), tile(0,16), 0, hsl(0,0,0.8), 0);
+        super(pos, vec2(1,1), tile(3,16), 0, hsl(0,0,0.8), 0);
         this.newDir();
     }
 
     newDir() {
-        this.nextPos = vec2(randInt(2, 28), randInt(2, 14));
+        this.nextPos = vec2(randInt(2, screen_width - 2), randInt(2, screen_height - 2));
         this.direction = this.nextPos.subtract(this.pos).normalize();
     }
 

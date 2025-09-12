@@ -5,9 +5,10 @@
  * with some variables overridden by the child classes
  */
 class Magician extends EngineObject {
-    constructor(pos) {
-        const enemyTile = tile(2, 16); // Use tile 2 for enemy
-        super(pos, vec2(1,1), enemyTile, 0, randColor(), 0);
+    constructor(pos, tileIndex = 5) {
+        // Use tile 5 by default for magician
+        const enemyTile = tile(tileIndex, 16);
+        super(pos, vec2(1.5,1.5), enemyTile, 0, hsl(0,0,1), 0);
         this.speed = 0.05;
         this.health = 1;
         this.shootCooldown = 120;
@@ -20,6 +21,7 @@ class Magician extends EngineObject {
         this.spellScale = 0; // Scale of the veelocity vector of the spells (their speed)
         this.angleStep = PI/8; // The angle between each spell (smaller : more spells)
         this.spellColor = hsl(0, 1, 0.8);
+        this.bulletTile = 0; // Tile index (16 + this value);
     }
 
     update() {
@@ -33,7 +35,7 @@ class Magician extends EngineObject {
                 if(this.rotSpeed != 0) {
                     projectile = new TurningBullet(this.pos, shootDirection, this.spellColor, this.rotSpeed, this.spellScale);
                 } else {
-                    projectile = new Bullet(this.pos, shootDirection, this.spellColor);
+                    projectile = new Bullet(this.pos, shootDirection, this.spellColor, this.bulletTile);
                 }
                 projectiles.push(projectile);
             }

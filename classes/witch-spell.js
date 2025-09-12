@@ -1,9 +1,10 @@
 class WitchSpell extends EngineObject {
     constructor(pos, direction) {
-        const projTile = tile(1, 16);
-        super(pos, vec2(0.5,0.5), projTile, 0, hsl(1,1,0.5), 0);
-        this.velocity = direction.scale(0.1);
-        this.lifetime = 300; // 5 seconds at 60fps
+        // Tile : 5th tile on the spells line
+        const projTile = tile(20, 16);
+        super(pos, vec2(1,1), projTile, 0, hsl(0,0,1), 0);
+        this.velocity = direction.scale(0.05);
+        this.lifetime = 600;
     }
 
     update() {

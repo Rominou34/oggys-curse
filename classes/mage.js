@@ -6,7 +6,7 @@
  */
 class Mage extends Magician {
     constructor(pos) {
-        super(pos);
+        super(pos, 7);
 
         this.cooldown = 240;
         this.shootCooldown = 120;

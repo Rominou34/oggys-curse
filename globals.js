@@ -15,6 +15,7 @@ var bestScore = 0;
 var ap_oggys_curse_bestScore = 0;
 var gameOver = false;
 var inMenu = true;
+var characterSize = vec2(1.5,1.5);
 
 // game mode and wave data
 // gameMode can be 'random' or 'wave'

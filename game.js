@@ -19,10 +19,10 @@ function gameInit()
     const backgroundLayer = new TileLayer(vec2(0,0), vec2(screen_width, screen_height));
     for(let x = 0; x < screen_width; x++) {
         for (let y = 0; y < screen_height; y++) {
-            const tileIndex = 1;
+            const tileIndex = 0;
             const direction = 0;
             const mirror = false;
-            const color = new Color(1, 0.5, 0.3, 1);
+            const color = new Color(1, 1, 1, 1);
             const data = new TileLayerData(tileIndex, direction, mirror, color);
             backgroundLayer.setData(vec2(x,y), data);
             setTileCollisionData(vec2(x,y), 1);
@@ -36,26 +36,26 @@ function gameInit()
     const tileLayer = new TileLayer(pos, tileCollisionSize);
 
     // get level data from the tiles image
-    const tileImage = textureInfos[0].image;
-    mainContext.drawImage(tileImage,0,0);
-    const imageData = mainContext.getImageData(0,0,tileImage.width,tileImage.height).data;
-    for (pos.x = tileCollisionSize.x; pos.x--;)
-    for (pos.y = tileCollisionSize.y; pos.y--;)
-    {
-        // check if this pixel is set
-        const i = pos.x + tileImage.width*(15 + tileCollisionSize.y - pos.y);
-        if (!imageData[4*i])
-            continue;
+    // const tileImage = textureInfos[0].image;
+    // mainContext.drawImage(tileImage,0,0);
+    // const imageData = mainContext.getImageData(0,0,tileImage.width,tileImage.height).data;
+    // for (pos.x = tileCollisionSize.x; pos.x--;)
+    // for (pos.y = tileCollisionSize.y; pos.y--;)
+    // {
+    //     // check if this pixel is set
+    //     const i = pos.x + tileImage.width*(15 + tileCollisionSize.y - pos.y);
+    //     if (!imageData[4*i])
+    //         continue;
         
-        // set tile data
-        const tileIndex = 2;
-        const direction = randInt(4)
-        const mirror = !randInt(2);
-        const color = randColor();
-        const data = new TileLayerData(tileIndex, direction, mirror, color);
-        tileLayer.setData(pos, data);
-        setTileCollisionData(pos, 1);
-    }
+    //     // set tile data
+    //     const tileIndex = 0;
+    //     const direction = randInt(4)
+    //     const mirror = !randInt(2);
+    //     const color = randColor();
+    //     const data = new TileLayerData(tileIndex, direction, mirror, color);
+    //     tileLayer.setData(pos, data);
+    //     setTileCollisionData(pos, 1);
+    // }
 
     // Adding walls all around the map
     for(let x = 0; x < screen_width; x++) {
@@ -64,7 +64,7 @@ function gameInit()
                 const tileIndex = 1;
                 const direction = 0;
                 const mirror = false;
-                const color = new Color(0.5, 0.25, 0.15, 1);
+                const color = new Color(1, 1, 1, 1);
                 const data = new TileLayerData(tileIndex, direction, mirror, color);
                 const pos = vec2(x,y);
                 tileLayer.setData(pos, data);
@@ -74,7 +74,7 @@ function gameInit()
     }
 
     // Create a player using tile 0
-    const playerTile = tile(0, 16);
+    const playerTile = tile(2, 16);
     player = new Player(vec2(16,8), vec2(1,1), playerTile, 0, hsl(0,0,0.2), 0);
     player.setCollision(true, true, true, true);
 
@@ -181,7 +181,7 @@ function gameUpdate()
         if (enemies.length === 0) {
             if (!pendingNextWave) {
                 pendingNextWave = true;
-                waveDelayFrames = 300; // 5 seconds at 60fps
+                waveDelayFrames = 120; // 2 seconds at 60fps
             } else if (waveDelayFrames > 0) {
                 waveDelayFrames--;
             } else {
@@ -243,7 +243,6 @@ function gameUpdate()
                 enemy.health -= 1;
                 wspe.destroy();
                 witchSpells.splice(witchSpells.indexOf(wspe), 1);
-                break;
             }
             if (enemy.health <= 0) {
                 enemy.destroy();
@@ -260,14 +259,7 @@ function gameUpdate()
             mouse.destroy();
             mouses.splice(mouses.indexOf(mouse), 1);
 
-            // If we are not full health we gain back 1 hp every 5 mice
-            if(player.health < 10) {
-                player.heal++;
-            }
-            if(player.heal >= 5) {
-                player.health++;
-                player.heal = 0;
-            }
+            player.eatMouse();
             break;
         }
     }
