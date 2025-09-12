@@ -9,7 +9,7 @@ class Mage extends Magician {
         super(pos);
 
         this.cooldown = 240;
-        this.shootCooldown = 240;
+        this.shootCooldown = 120;
         this.rotSpeed = 0.008;
         this.spellScale = 0.025;
         this.spellColor = hsl(0.2, 1, 0.8);

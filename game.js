@@ -84,6 +84,14 @@ function gameInit()
 
     tileLayer.redraw();
 
+    // Load best score from localStorage (persisted between sessions)
+    try {
+        const savedBest = localStorage.getItem(BEST_KEY);
+        if (savedBest !== null) {
+            bestScore = Number(savedBest) || 0;
+        }
+    } catch (e) {}
+
     // setup camera
     cameraPos = vec2(screen_width / 2, screen_height / 2);
     cameraScale = 32;

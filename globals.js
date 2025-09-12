@@ -1,6 +1,7 @@
 // sound effects
 const screen_width = 32;
 const screen_height = 24;
+const BEST_KEY = 'oggys_curse_bestScore';
 
 // game variables
 var player;
@@ -11,6 +12,7 @@ var witchSpells = [];
 var mouses = [];
 var score = 0;
 var bestScore = 0;
+var ap_oggys_curse_bestScore = 0;
 var gameOver = false;
 var inMenu = true;
 
@@ -27,6 +29,7 @@ var waves = [
     {   // Wave 1 (gentle horizontal pair)
         magicians: [[12,8], [screen_width-12,8]],
         mages: [[16,6]],
+        sbires: [[4, 12], [screen_width-4,12]],
         shooters: [[16,18]],
         wizards: []
     },

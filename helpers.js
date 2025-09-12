@@ -34,10 +34,11 @@ function spawnWave(waveIndex) {
     };
 
     // Spawn base wave
-    spawnAtList(wave.magicians, Magician);
-    spawnAtList(wave.mages, Mage);
-    spawnAtList(wave.shooters, Shooter);
-    spawnAtList(wave.wizards, Wizard);
+    spawnAtList(wave.magicians || [], Magician);
+    spawnAtList(wave.mages || [], Mage);
+    spawnAtList(wave.sbires || [], Sbire);
+    spawnAtList(wave.shooters || [], Shooter);
+    spawnAtList(wave.wizards || [], Wizard);
 
     // Inject additional enemies based on 10-wave thresholds
     // waveIndex is 0-based in code; display is +1. Compute threshold using display index.
@@ -47,10 +48,11 @@ function spawnWave(waveIndex) {
     if (threshold >= 10 && addEnemies && addEnemies[threshold]) {
         const extra = addEnemies[threshold];
         console.log('>>>> extra', extra);
-        spawnAtList(extra.magicians, Magician);
-        spawnAtList(extra.mages, Mage);
-        spawnAtList(extra.shooters, Shooter);
-        spawnAtList(extra.wizards, Wizard);
+        spawnAtList(extra.magicians || [], Magician);
+        spawnAtList(extra.mages || [], Mage);
+        spawnAtList(extra.sbires || [], Sbire);
+        spawnAtList(extra.shooters || [], Shooter);
+        spawnAtList(extra.wizards || [], Wizard);
     }
 }
 
@@ -61,6 +63,7 @@ function launchGame() {
 
     if(score > bestScore) {
         bestScore = score;
+        try { localStorage.setItem(BEST_KEY, String(bestScore)); } catch (e) {}
     }
     score = 0;
     gameOver = false;
