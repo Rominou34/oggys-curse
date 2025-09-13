@@ -211,6 +211,8 @@ function gameUpdate()
     // Check game over
     if (player.health <= 0) {
         gameOver = true;
+        gameOverSound.play();
+        music.stop();
     }
 
     // Spawn new mouses occasionally

@@ -16,7 +16,7 @@ class Player extends EngineObject {
         // Sound
         this.damageSound = new Sound([2.1,,191,.08,.04,,3,3,5,,,,,.5,5,.3,.13,.48]);
         this.eatingSound = new Sound([,,539,,.06,.2,1,2,,,500,.04,.02,,,,.04]);
-        this.healingSound = new Sound([,.5,847,,.3,.5,1,,,,-500,.05,.1,,,,.1]);
+        this.healingSound = new Sound([,0,847,,.3,.5,1,,,,-800,.05,.01,,,,.1]);
     }
 
     move(direction) {
@@ -61,7 +61,6 @@ class Player extends EngineObject {
 
     eatMouse() {
         // Sound effect of mouse eating
-        this.eatingSound.play();
         // zzfx(...[,,539,,.06,.2,1,2,,,500,.04,.02,,,,.04]);
         // zzfx(...[,,353,.02,.02,,,2.5,-10,-5,,,,,,.1,,.64,.08,,298]);
 
@@ -73,6 +72,8 @@ class Player extends EngineObject {
             this.health++;
             this.heal = 0;
             this.healingSound.play();
+        } else {
+            this.eatingSound.play();
         }
     }
 }
