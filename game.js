@@ -5,9 +5,6 @@
 
 'use strict';
 
-// show the LittleJS splash screen
-setShowSplashScreen(false);
-
 // fix texture bleeding by shrinking tile slightly
 tileFixBleedScale = .5;
 
@@ -35,28 +32,6 @@ function gameInit()
     const pos = vec2();
     const tileLayer = new TileLayer(pos, tileCollisionSize);
 
-    // get level data from the tiles image
-    // const tileImage = textureInfos[0].image;
-    // mainContext.drawImage(tileImage,0,0);
-    // const imageData = mainContext.getImageData(0,0,tileImage.width,tileImage.height).data;
-    // for (pos.x = tileCollisionSize.x; pos.x--;)
-    // for (pos.y = tileCollisionSize.y; pos.y--;)
-    // {
-    //     // check if this pixel is set
-    //     const i = pos.x + tileImage.width*(15 + tileCollisionSize.y - pos.y);
-    //     if (!imageData[4*i])
-    //         continue;
-        
-    //     // set tile data
-    //     const tileIndex = 0;
-    //     const direction = randInt(4)
-    //     const mirror = !randInt(2);
-    //     const color = randColor();
-    //     const data = new TileLayerData(tileIndex, direction, mirror, color);
-    //     tileLayer.setData(pos, data);
-    //     setTileCollisionData(pos, 1);
-    // }
-
     // Adding walls all around the map
     for(let x = 0; x < screen_width; x++) {
         for(let y = 0; y < screen_height; y++) {
@@ -81,7 +56,6 @@ function gameInit()
     // Create witch
     witch = new Witch(vec2(16,12));
 
-
     tileLayer.redraw();
 
     // Load best score from localStorage (persisted between sessions)
@@ -104,55 +78,14 @@ function gameUpdate()
         if(keyWasPressed('KeyR')) {
             launchGame();
         }
-        if(keyWasPressed('KeyM')) {
-            inMenu = true;
-            gameOver = false;
-        }
         return;
     } else if (inMenu) {
         // Handle mode selection from menu
         // Keyboard shortcuts
-        if (keyWasPressed('KeyW')) {
-            gameMode = 'wave';
+        if (keyWasPressed('Space')) {
             inMenu = false;
             launchGame();
         }
-        if (keyWasPressed('KeyR')) {
-            gameMode = 'random';
-            inMenu = false;
-            launchGame();
-        }
-
-        // Mouse click on on-screen buttons
-        if (mouseWasPressed(0)) {
-            // Convert world mouse to screen coordinates
-            const mouseScreen = mousePos.subtract(cameraPos).scale(cameraScale).add(vec2(mainCanvasSize.x/2, mainCanvasSize.y/2));
-
-            // Button bounds (computed to match draw positions in gameRenderPost)
-            const btnSize = 40;
-            const makeBounds = (center, text) => {
-                const estimatedWidth = text.length * btnSize * 0.6;
-                const halfW = estimatedWidth / 2;
-                const halfH = btnSize * 0.7 / 2;
-                return { x0: center.x - halfW, y0: center.y - halfH, x1: center.x + halfW, y1: center.y + halfH };
-            };
-            const waveCenter = vec2(mainCanvasSize.x/2 - 120, mainCanvasSize.y/2 + 20);
-            const randomCenter = vec2(mainCanvasSize.x/2 + 120, mainCanvasSize.y/2 + 20);
-            const waveBounds = makeBounds(waveCenter, 'Wave Mode');
-            const randomBounds = makeBounds(randomCenter, 'Random Mode');
-
-            const inside = (p, b) => p.x >= b.x0 && p.x <= b.x1 && p.y >= b.y0 && p.y <= b.y1;
-            if (inside(mouseScreen, waveBounds)) {
-                gameMode = 'wave';
-                inMenu = false;
-                launchGame();
-            } else if (inside(mouseScreen, randomBounds)) {
-                gameMode = 'random';
-                inMenu = false;
-                launchGame();
-            }
-        }
-        return;
     }
 
     if (mouseWheel)
@@ -177,7 +110,7 @@ function gameUpdate()
     }
 
     // Wave progression with delay: when all enemies are cleared, start a countdown before the next wave
-    if (!inMenu && !gameOver && gameMode === 'wave') {
+    if (!inMenu && !gameOver) {
         if (enemies.length === 0) {
             if (!pendingNextWave) {
                 pendingNextWave = true;
@@ -307,20 +240,12 @@ function gameRenderPost()
             hsl(0,0,1));
 
         // Instruction
-        drawTextScreen('Select a Mode:',
+        drawTextScreen('Press space to start',
             vec2(mainCanvasSize.x/2, mainCanvasSize.y/2), 40,
             hsl(0,0,1));
-
-        // Buttons as clickable text
-        drawTextScreen('Wave Mode (W)',
-            vec2(mainCanvasSize.x/2, mainCanvasSize.y/2 + 60), 40,
-            hsl(0.6,0.8,0.8));
-        drawTextScreen('Random Mode (R)',
-            vec2(mainCanvasSize.x/2, mainCanvasSize.y/2 + 100), 40,
-            hsl(0.1,0.8,0.8));
     } else if (!gameOver) {
         // draw to overlay canvas for hud rendering
-        let waveInfo = gameMode == 'random' ? '' : ` | Wave : ${currentWaveIndex + 1}`;
+        let waveInfo = ` | Wave : ${currentWaveIndex + 1}`;
         drawTextScreen(`Score: ${score} | Best : ${bestScore}${waveInfo}`,
             vec2(mainCanvasSize.x/2, 70), 40,   // position, size
             hsl(0,0,1));         // color, outline size and color
@@ -332,7 +257,7 @@ function gameRenderPost()
     }
 
     if (gameOver) {
-        drawTextScreen('Game Over! Press R to Restart | M for Menu',
+        drawTextScreen('Game Over! Press R to Restart',
             vec2(mainCanvasSize.x/2, mainCanvasSize.y/2), 60,
             hsl(0,1,0.5), 6, hsl(0,0,0));
     }

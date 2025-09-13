@@ -12,7 +12,6 @@ const sourceFiles =
 [
     'dist/littlejs.reduced.js',
     'classes/bullet.js',
-    'classes/enemy.js',
     'classes/magician.js',
     'classes/mage.js',
     'classes/mouse.js',

@@ -17,13 +17,12 @@ var gameOver = false;
 var inMenu = true;
 var characterSize = vec2(1.5,1.5);
 
-// game mode and wave data
-// gameMode can be 'random' or 'wave'
-var gameMode = 'random';
+// Wave data
 var currentWaveIndex = 0;
 // Inter-wave delay (in frames). 300 frames ~= 5 seconds at 60fps
 var waveDelayFrames = 0;
 var pendingNextWave = false;
+
 // Deterministic waves definition: arrays of enemy positions per type
 // Positions are tile coordinates [x, y]
 var waves = [

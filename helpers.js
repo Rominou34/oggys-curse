@@ -1,10 +1,3 @@
-function spawnEnemies(type, qty) {
-    for(let i = 0; i < qty; i++) {
-        const enemy = new type(vec2(randInt(2,screen_width - 2), randInt(2,screen_height - 2)));
-        enemies.push(enemy);
-    }
-}
-
 function clearChaos() {
     for (const enemy of enemies) enemy.destroy();
     enemies = [];
@@ -75,20 +68,11 @@ function launchGame() {
     for (const mouse of mouses) mouse.destroy();
     mouses = [];
 
-    if (gameMode === 'random') {
-        // Random mode, preserve original behavior
-        spawnEnemies(Shooter, 3);
-        spawnEnemies(Magician, 5);
-        spawnEnemies(Wizard, 2);
-        spawnEnemies(Mage, 2);
-    } else {
-        // Wave mode
-        currentWaveIndex = 0;
-        // First wave spawns immediately; clear any pending delay
-        pendingNextWave = false;
-        waveDelayFrames = 0;
-        spawnWave(currentWaveIndex);
-    }
+    currentWaveIndex = 0;
+    // First wave spawns immediately; clear any pending delay
+    pendingNextWave = false;
+    waveDelayFrames = 0;
+    spawnWave(currentWaveIndex);
 
     // Create mouses
     for (let i = 0; i < 3; i++) {

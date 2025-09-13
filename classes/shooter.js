@@ -17,7 +17,7 @@ class Shooter extends EngineObject {
         // Shoot projectiles
         if (this.shootCooldown <= 0) {
             this.shootDirection = vec2(Math.cos(this.shootAngle), Math.abs(Math.sin(this.shootAngle)) * -1);
-            const projectile = new Bullet(this.pos, this.shootDirection, hsl(0,1,0.5), 0, 0.005, 3000);
+            const projectile = new Bullet(this.pos, this.shootDirection, new Color(0.2,0.5,1,1), 0, 0.005, 3000);
             projectiles.push(projectile);
 
             this.shootCooldown = 10;
