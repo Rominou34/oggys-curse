@@ -5,11 +5,10 @@
  */
 class Sbire extends EngineObject {
     constructor(pos) {
-        // @TODO - Create sbire sprite (tile 9)
-        const enemyTile = tile(2, 16); // Use tile 2 for enemy
-        super(pos, characterSize, enemyTile, 0, hsl(0,0,1), 0);
+        const enemyTile = tile(7, 16); // Use tile 2 for enemy
+        super(pos, characterSize, enemyTile, 0, hsl(0.3,0.25,0.5), 0);
         this.speed = 0.05;
-        this.health = 1;
+        this.health = 2;
         this.shootCooldown = 120;
         this.target = player.pos;
         this.coneWidth = PI/6; // 30 degrees cone

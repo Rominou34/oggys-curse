@@ -19,7 +19,7 @@ var characterSize = vec2(1.5,1.5);
 
 // Audio
 const gameOverSound = new Sound([,0,925,.05,.3,.6,1,.3,,12,-100,.1,-0.06,,,.1]);
-const music = new Music([[[1.8,0,72,,,.2,,4,-2,6,50,.15,,6],[,0,655,,,.09,3,1.65,,,,,.02,3.8,-.1,,.2],[1.2,0,23,,,.2,3,4,,,3,.9,.05],[1.5,0,740,,,.15,1,0,-.1,-.15,,.02,,,.12,,.06]],[[[3,-1,8,,,8,13,,13,,,,,,,,,,,,,,8,,,8,13,,13,,,,,,,,,,,,,,10,,,10,15,,15,,13,,15,,6,,15,,,8,6,5,3,5],[,1,25,,,,,,,,,,,,,25,,,,,,,,,,,,,25,,,25,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,],[2,-1,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,]],[[3,-1,8,,,8,13,,13,,10,,15,,10,,15,,6,8,5,6,8,,,8,13,,13,,,,,,,,,,,,,,10,,,10,15,,15,,13,,15,,6,,15,,,8,6,5,3,5],[,1,25,,,,,,,,,,,,,25,,,,,,,,,,,,,25,,,25,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,],[2,-1,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,]]],[0,0],,{}]);
+const music = new Music([[[1.8,0,72,,,.2,,4,-2,6,50,.15,,6],[,0,655,,,.09,3,1.65,,,,,.02,3.8,-.1,,.2],[1.2,0,23,,,.2,3,4,,,3,.9,.05],[1.5,0,740,,,.15,1,0,-.1,-.15,,.02,,,.12,,.06]],[[[3,-1,8,,,8,13,,13,,,,,,,,,,,,,,8,,,8,13,,13,,,,,,,,,,,,,,10,,,10,15,,15,,13,,15,,6,,15,,,8,6,5,3,5],[2,-1,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,]],[[3,-1,8,,,8,13,,13,,10,,15,,10,,15,,6,8,5,6,8,,,8,13,,13,,,,,,,,,,,,,,10,,,10,15,,15,,13,,15,,6,,15,,,8,6,5,3,5],[,1,25,,,,,,,,,,,,,25,,,,,,,,,,,,,25,,,25,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,],[2,-1,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,25,,13,,]]],[0],,{"title":"Oggy"}]);
 
 // Wave data
 var currentWaveIndex = 0;
@@ -30,65 +30,57 @@ var pendingNextWave = false;
 // Deterministic waves definition: arrays of enemy positions per type
 // Positions are tile coordinates [x, y]
 var waves = [
-    {   // Wave 1 (gentle horizontal pair)
-        magicians: [[12,8], [screen_width-12,8]],
-        mages: [[16,6]],
-        sbires: [[4, 12], [screen_width-4,12]],
-        shooters: [[16,18]],
-        wizards: []
+    {
+        sbires: [[4, 12], [screen_width-4,12]]
     },
-    {   // Wave 2 (balanced lanes)
+    {
+        sbires: [[4, 18], [screen_width-4,18]],
         magicians: [[10,10], [screen_width-10,10]],
-        mages: [[8,6], [screen_width-8,6]],
-        shooters: [[6,16], [screen_width-6,16]],
-        wizards: [[16,12]]
     },
-    {   // Wave 3 (slightly denser, still fair)
+    {
+        sbires: [[4, 12], [screen_width-4,12]],
         magicians: [[12,12], [screen_width-12,12]],
-        mages: [[10,8], [screen_width-10,8]],
-        shooters: [[8,18], [screen_width-8,18]],
-        wizards: [[16,14]]
+        mages: [[10,8], [screen_width-10,8]]
     },
-    {   // Wave 4 (horizontal symmetry)
+    {
         magicians: [[8,8], [screen_width-8,8]],
         mages: [[6,16], [screen_width-6,16]],
-        shooters: [[4,12], [screen_width-4,12]],
-        wizards: []
+        shooters: [[4,screen_height-4], [screen_width-4,screen_height-4]]
     },
-    {   // Wave 5 (quadrants)
+    {
         magicians: [[10,6], [screen_width-10,6]],
         mages: [[10,18], [screen_width-10,18]],
-        shooters: [[8,4], [screen_width-8,4], [8,20], [screen_width-8,20]],
-        wizards: []
+        shooters: [[8,screen_height-4], [screen_width-8,screen_height-4]],
+        wizards: [[screen_width/2,6]]
     },
-    {   // Wave 6 (cross and corners)
+    {
         magicians: [[6,12], [screen_width-6,12], [16,12]],
         mages: [[12,8], [screen_width-12,8], [12,16], [screen_width-12,16]],
         shooters: [],
         wizards: [[16,6], [16,18]]
     },
-    {   // Wave 7 (rings)
+    {
         magicians: [[4,8], [screen_width-4,8]],
         mages: [[4,16], [screen_width-4,16]],
-        shooters: [[8,12], [screen_width-8,12]],
+        shooters: [[8,screen_height-4], [screen_width-8,screen_height-4]],
         wizards: [[16,10], [16,14]]
     },
-    {   // Wave 8 (outer box)
+    {
         magicians: [[6,6], [screen_width-6,6], [6,18], [screen_width-6,18]],
         mages: [[8,8], [screen_width-8,8], [8,16], [screen_width-8,16]],
-        shooters: [[16,4], [16,20]],
+        shooters: [[16,screen_height-4], [16,screen_height-4]],
         wizards: [[4,12], [screen_width-4,12]]
     },
-    {   // Wave 9 (inner box)
+    {
         magicians: [[10,10], [screen_width-10,10], [10,14], [screen_width-10,14]],
         mages: [[16,8], [16,16]],
         shooters: [[6,12], [screen_width-6,12]],
         wizards: [[12,12], [screen_width-12,12]]
     },
-    {   // Wave 10 (star)
+    {
         magicians: [[4,12], [screen_width-4,12], [16,4], [16,20]],
         mages: [[8,6], [screen_width-8,6], [8,18], [screen_width-8,18]],
-        shooters: [[6,10], [screen_width-6,10], [6,14], [screen_width-6,14]],
+        shooters: [[6,14], [screen_width-6,14]],
         wizards: [[16,12]]
     }
 ];
@@ -97,33 +89,23 @@ var waves = [
 // Example structure: { 10: { magicians:[[x,y],...], mages:[], shooters:[], wizards:[] }, 20: { ... } }
 var addEnemies = {
     10: {
-        magicians: [[5,5], [screen_width-5,5]],
-        mages: [[10,18], [screen_width-10,18]],
-        shooters: [[4,4], [screen_width-4,4]],
-        wizards: [[16,3], [16,21]]
+        shooters: [[screen_width/2, screen_height-2]]
     },
     20: {
-        magicians: [[7,7], [screen_width-7,7], [7,17], [screen_width-7,17]],
-        mages: [[12,6], [screen_width-12,6], [12,18], [screen_width-12,18]],
-        shooters: [[6,10], [screen_width-6,10], [6,14], [screen_width-6,14]],
-        wizards: [[16,6], [16,18]]
+        shooters: [[screen_width/2, screen_height-2]],
+        sbires: [[4,18], [screen_width-4,18],[8,18], [screen_width-8,18]]
     },
     30: {
-        magicians: [[6,12], [screen_width-6,12], [16,12]],
-        mages: [[8,8], [screen_width-8,8], [8,16], [screen_width-8,16]],
-        shooters: [[4,12], [screen_width-4,12], [16,4], [16,20]],
-        wizards: [[12,12], [screen_width-12,12]]
+        shooters: [[screen_width/2, screen_height-2]],
+        wizards: [[16,6]]
     },
     40: {
-        magicians: [[10,10], [screen_width-10,10], [10,14], [screen_width-10,14]],
-        mages: [[6,6], [screen_width-6,6], [6,18], [screen_width-6,18]],
-        shooters: [[8,4], [screen_width-8,4], [8,20], [screen_width-8,20]],
-        wizards: [[16,8], [16,16]]
+        shooters: [[screen_width/2, screen_height-2]],
+        magicians: [[16,6], [16,18]]
     },
     50: {
-        magicians: [[4,8], [screen_width-4,8], [4,16], [screen_width-4,16], [16,12]],
-        mages: [[10,6], [screen_width-10,6], [10,18], [screen_width-10,18]],
-        shooters: [[6,12], [screen_width-6,12], [16,4], [16,20]],
-        wizards: [[12,10], [screen_width-12,10], [12,14], [screen_width-12,14]]
+        shooters: [[screen_width/2, screen_height-2]],
+        magicians: [[4,16], [screen_width-4,16]],
+        wizards: [[16,6]]
     }
 };

@@ -253,7 +253,7 @@ function gameRenderPost()
             hsl(0,0,1));         // color, outline size and color
 
         // draw to overlay canvas for hud rendering
-        drawTextScreen(`HP : ${player.health}🤍 | Heal : ${player.heal}`,
+        drawTextScreen(`HP : ${player.health} | Heal : ${player.heal}`,
             vec2(mainCanvasSize.x / 2, 120), 40,   // position, size
             hsl(0,0,1));         // color, outline size and color
     }

@@ -1,18 +1,13 @@
 class TurningBullet extends Bullet {
-    constructor(pos, direction, color, rotSpeed, scale) {
-        super(pos, direction, color);
+    constructor(pos, direction, color, rotSpeed, scale, lifetime) {
+        super(pos, direction, color, 0);
         this.direction = direction;
         this.rotSpeed = rotSpeed;
         this.scale = scale;
+        this.lifetime = lifetime;
     }
 
     update() {
-        // this.direction = this.direction.rotate(0.02);
-        // this.velocity = this.direction.scale(0.05);
-
-        // this.direction = this.direction.rotate(0.008);
-        // this.velocity = this.direction.scale(0.025);
-
         this.direction = this.direction.rotate(this.rotSpeed);
         this.velocity = this.direction.scale(this.scale);
 

@@ -1,10 +1,9 @@
 class Shooter extends EngineObject {
     constructor(pos) {
-        // Use tile 2 for enemy
         const enemyTile = tile(8, 16);
         super(pos, characterSize, enemyTile, 0, hsl(0,0,1), 0);
         this.speed = 0.05;
-        this.health = 1;
+        this.health = 3;
         this.shootCooldown = 10;
         this.target = player.pos;
         this.shootDirection = vec2(0,1);

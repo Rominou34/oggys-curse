@@ -51,8 +51,8 @@ function spawnWave(waveIndex) {
 
 // Reset game state
 function launchGame() {
-    music.play();
-    player.health = 1;
+    music.playMusic(1,true);
+    player.health = 10;
     player.pos = vec2(16,8);
 
     if(score > bestScore) {

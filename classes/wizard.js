@@ -9,9 +9,10 @@ class Wizard extends Magician {
 
         this.shootCooldown = 120;
         this.cooldown = 480;
-        this.rotSpeed = 0.02;
-        this.spellScale = 0.05;
+        this.rotSpeed = 0.01;
+        this.spellScale = 0.03;
         this.spellColor = hsl(0.6, 1, 0.8);
         this.bulletTile = 2;
+        this.bulletDuration = 600;
     }
 }
